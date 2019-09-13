@@ -1,0 +1,23 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.8.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+	id 'war'
+}
+
+group = 'com.todoApplication'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.10'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile group: 'org.json', name: 'json', version: '20180813'
+	testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+
+}
