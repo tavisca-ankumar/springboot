@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.todoApplication.todo;
 
 import org.json.JSONException;
@@ -21,6 +22,27 @@ public class ToDoController {
 
 
 
+=======
+//package com.todoApplication.todo;
+//
+//import org.json.JSONException;
+//import org.json.JSONObject;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.List;
+//
+//@RestController
+//public class ToDoController {
+//
+//    @Autowired
+//    ListRepo repo;
+//
+>>>>>>> 3c6b93ba54130aac4604cddcf8e4013fc47830f8
 //    private String[] arrayData = {"delectus aut autem",
 //            "quis ut nam facilis et officia qui",
 //            "fugiat veniam minus",
@@ -34,6 +56,7 @@ public class ToDoController {
 //
 //    private List<String> data =  new ArrayList<>(Arrays.asList(arrayData));
 //    private List<String> tempdata =  new ArrayList<>();
+<<<<<<< HEAD
 
 //    @RequestMapping(value = "/", method = RequestMethod.GET)
 //    public List<ToDoList> getList(){
@@ -41,6 +64,13 @@ public class ToDoController {
 //        task.setTask(tsk);
 //        ListsOfTodo lists = repo.save(task);
 //        return lists;
+=======
+//
+//    @RequestMapping(value = "/", method = RequestMethod.GET)
+//    public ResponseEntity<?> showHomePage() throws JSONException {
+//        JSONObject js = new JSONObject().put("data",data);
+//        return new ResponseEntity<>(js.toString(), HttpStatus.OK);
+>>>>>>> 3c6b93ba54130aac4604cddcf8e4013fc47830f8
 //    }
 //
 //    @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -65,6 +95,7 @@ public class ToDoController {
 //        return showHomePage();
 //    }
 //
+<<<<<<< HEAD
     @RequestMapping(value = "/search/{name}", method = RequestMethod.GET)
     public List<ToDoList
             > updatePage(@PathVariable("name") String name) {
@@ -72,3 +103,18 @@ public class ToDoController {
         return list;
     }
 }
+=======
+//    @RequestMapping(value = "/search/{name}", method = RequestMethod.GET)
+//    public ResponseEntity<?> updatePage(@PathVariable("name") String name) {
+//        if (data.contains(name)) {
+//            tempdata.add(name);
+//            JSONObject js = new JSONObject().put("data",tempdata);
+//            tempdata.remove(tempdata.indexOf(name));
+//            return new ResponseEntity<>(js.toString(), HttpStatus.OK);
+//        }
+//        JSONObject js = new JSONObject().put("data",tempdata);
+//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+//    }
+//
+//}
+>>>>>>> 3c6b93ba54130aac4604cddcf8e4013fc47830f8

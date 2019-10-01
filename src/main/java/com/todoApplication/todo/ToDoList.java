@@ -10,6 +10,7 @@ public class ToDoList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+<<<<<<< HEAD
     private Long id;
     private String item;
 
@@ -42,5 +43,24 @@ public class ToDoList {
 
     public void setItem(String item) {
         this.item = item;
+=======
+    private int lid;
+    private String task;
+
+    public int getLid() {
+        return lid;
+    }
+
+    public void setLid(int lid) {
+        this.lid = lid;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
+>>>>>>> 3c6b93ba54130aac4604cddcf8e4013fc47830f8
     }
 }
