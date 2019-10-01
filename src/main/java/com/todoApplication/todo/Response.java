@@ -3,6 +3,7 @@ package com.todoApplication.todo;
 import java.util.List;
 
 public class Response {
+
     public List<String> getData() {
         return data;
     }
@@ -10,4 +11,5 @@ public class Response {
         this.data = data;
     }
     List<String> data;
+
 }

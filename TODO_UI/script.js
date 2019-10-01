@@ -5,31 +5,49 @@ window.onload = function () {
 
 function sendGetRequest()
   {
+	  varAutopopulateData = [];
      let request = new XMLHttpRequest();
-     request.open('GET', 'http://localhost:8080/', true);
-     request.onload = function () { varAutopopulateData = JSON.parse( this.responseText);
-     Showlist();}
+     request.open('GET', 'http://localhost:8080/list', true);
+     request.onload = function () { autopopulateData = JSON.parse( this.responseText)["_embedded"]["list"];
+	 for(let i=0;i<autopopulateData.length;i++){
+		 varAutopopulateData.push(autopopulateData[i].item);
+	 }
+	 Showlist();}
      request.send();
   }
 
   function AddItemInList()
     {
         let request = new XMLHttpRequest();
-       request.open('POST', 'http://localhost:8080/add', true);
+       request.open('POST', 'http://localhost:8080/list', true);
        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
        let item = document.getElementById("myInput").value;
-            varAutopopulateData.data.push(item);
-           let obj={"todoname":item};
+            varAutopopulateData.push(item);
+           let obj={"item":item};
            request.send(JSON.stringify(obj));
-           request.onload = function () { Showlist()};
+           request.onload = function () { sendGetRequest();}
    }
 
    function DeleteItemInList(el){
-       let request = new XMLHttpRequest();
-       request.open('DELETE', 'http://localhost:8080/delete/'+Number(el.className), true);
-       varAutopopulateData.data.splice(Number(el.className),1);
+	   let item = el.parentNode.previousSibling.innerHTML;
+	   let request = new XMLHttpRequest();
+	   request.open('GET', 'http://localhost:8080/list', true);
+	   request.send();
+       request.onload = function () {
+		autopopulateData = JSON.parse( this.responseText)["_embedded"]["list"];
+		url = null
+		for(x of autopopulateData){
+			if(x.item == item){
+				url = x['_links']['self']['href'];
+				break;
+			}
+		}
+		request.open('DELETE', url, true);
+       varAutopopulateData.splice(Number(el.className),1);
        request.send();
-       request.onload = function () { Showlist()};
+       request.onload = function () { sendGetRequest()};
+	   };
+       
    }
 
 function Showlist() {
@@ -38,8 +56,8 @@ function Showlist() {
 	OnClickHide();
 	document.getElementById("search-container").style.display = "block";
 	let html = `<table><tr>`;
-	for (let i = 0; i < varAutopopulateData.data.length; i++) {
-		html += `<td id="${i}">${varAutopopulateData.data[i]}</td>`;
+	for (let i = 0; i < varAutopopulateData.length; i++) {
+		html += `<td id="${i}">${varAutopopulateData[i]}</td>`;
 		html += `<td id="btn${i}">
 		<button type="button" onclick="EditItemInList(this)" class=${i}>EDIT</button>
 		<button type="button" onclick="DeleteItemInList(this)" class=${i}>DELETE</button>
@@ -89,9 +107,11 @@ function SetClassNameSelected(element) {
 	element.firstChild.className = "selected";
 }
 
+var itemPreviousValue = "";
 
 function EditItemInList(el){
-
+	itemPreviousValue = el.parentNode.previousSibling.innerHTML;
+	console.log(itemPreviousValue);
 	let tableCell = document.getElementById(el.className);
 	let tableButton = document.getElementById("btn"+el.className);
 	let inputUpdateBtn = document.createElement('button');
@@ -112,34 +132,49 @@ function EditItemInList(el){
 	tableCell.innerHTML = '';
   	tableCell.appendChild(input);
 	  input.focus();
-	  console.log(document.getElementsByClassName(input.className));
 }
 
+
+var url="";
 function UpdateList(index){
-    let request = new XMLHttpRequest();
-    request.open('PUT', 'http://localhost:8080/update/'+index, true);
+    // let request = new XMLHttpRequest();
+    // request.open('PUT', 'http://localhost:8080/update/'+index, true);
 
 	let classValue = "changeListItem"+index;
 
 	let inputText = document.getElementsByClassName(classValue)[0];
-	itemListValue = inputText.value;
-	if(SearchInList(itemListValue,index)){
-		varAutopopulateData.data[index]= itemListValue;
-		let tableCell = document.getElementById(index);
-		tableCell.innerHTML='';
-		html = `<td id="${index}">${varAutopopulateData.data[index]}</td>`;
-		tableCell.innerHTML=html;
-		let buttonCell = document.getElementById("btn"+index);
-		buttonCell.innerHTML='';
-		html = `<td id="btn${index}">
-		<button type="button" onclick="EditItemInList(this)" class=${index}>EDIT</button>
-		<button type="button" onclick="DeleteItemInList(this)" class=${index}>DELETE</button>
-		</td>`;
-		buttonCell.innerHTML=html;
-		let obj={"todoname":itemListValue};
-        request.send(JSON.stringify(obj));
-        request.onload = function () { Showlist()};
+	item = inputText.value;
+	console.log(item);
+	if(SearchInList(item,index)){
+		varAutopopulateData[index]= item;
+		console.log(varAutopopulateData[index]);
+	   let request = new XMLHttpRequest();
+	   request.open('GET', 'http://localhost:8080/list', true);
+	   request.send();
+	   let url1='';
+       request.onload = function () {
+		autopopulateData = JSON.parse( this.responseText)["_embedded"]["list"];
+		for(x of autopopulateData){
+			if(x.item == itemPreviousValue){
+				url1 = x['_links']['self']['href'];
+				break;
+			}
+		}
+		url = url1;
+		console.log(url);
+	   };
+	   console.log(url);
+	   console.log(item);
+       request.open('PUT', url, true);
+       let obj={"item":item};
+       console.log(JSON.stringify(obj));
+       request.send(JSON.stringify(obj));
+       request.onload = function () { sendGetRequest()};
 	}
+	else{
+	    alert("Item name already present");
+	}
+
 }
 
 function CancelUpdate(index){
@@ -147,7 +182,7 @@ function CancelUpdate(index){
 	console.log(classValue);
 	let tableCell = document.getElementById(index);
 	tableCell.innerHTML='';
-	html = `<td id="${index}">${varAutopopulateData.data[index]}</td>`;
+	html = `<td id="${index}">${varAutopopulateData[index]}</td>`;
 	tableCell.innerHTML=html;
 	let buttonCell = document.getElementById("btn"+index);
 	buttonCell.innerHTML='';
@@ -159,8 +194,8 @@ function CancelUpdate(index){
 }
 
 function SearchInList(itemListValue,dataIndex){
-	for(let index=0;index<varAutopopulateData.data.length;index++){
-		if(varAutopopulateData.data[index]==itemListValue && index!=Number(dataIndex)){
+	for(let index=0;index<varAutopopulateData.length;index++){
+		if(varAutopopulateData[index]==itemListValue && index!=Number(dataIndex)){
 			return false;
 		}
 	}
@@ -181,12 +216,12 @@ function autocomplete(inp) {
         a.setAttribute("id", this.id + "autocomplete-list");
         a.setAttribute("class", "autocomplete-items");
         this.parentNode.appendChild(a);
-        for (i = 0; i < varAutopopulateData.data.length; i++) {
-          if (varAutopopulateData.data[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+        for (i = 0; i < varAutopopulateData.length; i++) {
+          if (varAutopopulateData[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
             b = document.createElement("DIV");
-            b.innerHTML = "<strong>" + varAutopopulateData.data[i].substr(0, val.length) + "</strong>";
-            b.innerHTML += varAutopopulateData.data[i].substr(val.length);
-            b.innerHTML += "<input type='hidden' value='" + varAutopopulateData.data[i] + "'>";
+            b.innerHTML = "<strong>" + varAutopopulateData[i].substr(0, val.length) + "</strong>";
+            b.innerHTML += varAutopopulateData[i].substr(val.length);
+            b.innerHTML += "<input type='hidden' value='" + varAutopopulateData[i] + "'>";
             b.addEventListener("click", function(e) {
                 inp.value = this.getElementsByTagName("input")[0].value;
                closeAllLists();
@@ -232,15 +267,15 @@ function autocomplete(inp) {
         }
       }
     }
-
   }
 
 
   function ShowItemInList(){
     let request = new XMLHttpRequest();
-    console.log(document.getElementById("myInput").value);
-    request.open('GET', 'http://localhost:8080/search/'+document.getElementById("myInput").value, true);
-    request.onload = function () { varAutopopulateData = JSON.parse( this.responseText);
+    text = document.getElementById("myInput").value;
+    request.open('GET', 'http://localhost:8080/search/'+text, true);
+    request.onload = function () { varAutopopulateData = [""+JSON.parse( this.responseText)[0]["item"]];
+    console.log(varAutopopulateData);
     Showlist();}
     request.send();
   }
